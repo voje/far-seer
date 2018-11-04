@@ -1,0 +1,8 @@
+## Interface: 11200
+## Title: FarSeer
+## Notes: Analyze AH data. 
+## Author: voje
+## Version: 0.1
+## SavedVariables: farseer_dump
+
+far-seer.xml
