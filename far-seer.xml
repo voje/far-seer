@@ -1,5 +1,6 @@
 <Ui>
-    <Script File="fs_functions.lua"/>
+    <Script File="fs_event_handler.lua"/>
+	<Script File="fs_functions.lua"/>
     <Script File="fs_slash_commands.lua"/>
     <Frame name="FarSeer">
         <Scripts>
@@ -7,7 +8,7 @@
                 fs_onload();
             </OnLoad>
             <OnEvent>
-                fs_eventhandler(event, arg1, arg2, arg3, arg4); 
+                fs_eventhandler(event, arg1, arg2, arg3, arg4);
             </OnEvent>
         </Scripts>
     </Frame>

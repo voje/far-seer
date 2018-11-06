@@ -2,16 +2,18 @@
 
 SLASH_fs_main1 = "/fs";
 function SlashCmdList.fs_main(cmd)
-    if cmd == "test" then
-        handle_test();
-    elseif cmd == "show" then
-        fs_print(farseer_dump["test"]);
-    else
-        fs_print(cmd);
-    end
+	if cmd == "test1" then
+		_fsf.test1();
+	elseif cmd == "test2" then
+		_fsf.test2();
+	elseif cmd == "ah_on" then
+		_fsv.ah_automaton_on = true;
+	else
+		_fsf.pprint(cmd);
+	end
 end
 
-function handle_test()
-    fs_print("function: handle_test");
-    farseer_dump["test"] = "go to sleep man";
+SLASH_fs_ah1 = "/fsah";
+function SlashCmdList.fs_ah(cmd)
+	_fsf.auction_query("", nil, cmd);
 end
