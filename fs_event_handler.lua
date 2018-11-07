@@ -8,7 +8,7 @@ _fsv.start_time = nil;
 _fsv.end_time = nil;
 -- make ah query a state automata.
 -- tick() funcion progresses the state.
-_fsv.ah_automaton_on = false; -- this variable jumpstarts the automaton
+_fsv.automaton_state = "inactive";
 
 function fs_onload()
     this:RegisterEvent("CHAT_PLAYER_ENTERING_WORLD");
@@ -18,11 +18,9 @@ function fs_onload()
 end
 
 function fs_eventhandler(event, arg1, arg2, arg3, arg4)
-    if event == "CHAT_PLAYER_ENTERING_WORLD" then
-        _fsf.init_farseer_dump();
-    elseif event == "CHAT_MSG_CHANNEL" then
+    if event == "CHAT_MSG_CHANNEL" then
 		_fsf.increment_chat_counter();
 	elseif event == "AUCTION_ITEM_LIST_UPDATE" then
-		_fsf.scrape_auction_item_list();
+		_fsa.scrape_auction_item_list();
 	end
 end

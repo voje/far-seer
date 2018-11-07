@@ -7,7 +7,9 @@ function SlashCmdList.fs_main(cmd)
 	elseif cmd == "test2" then
 		_fsf.test2();
 	elseif cmd == "ah_on" then
-		_fsv.ah_automaton_on = true;
+		_fsv.automaton_state = "start";
+	elseif cmd == "ah_off" then
+		_fsv.automaton_state = "end";
 	else
 		_fsf.pprint(cmd);
 	end
