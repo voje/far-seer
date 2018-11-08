@@ -24,7 +24,7 @@ _fsf.init_farseer_dump = init_farseer_dump;
 
 local function tick()
 	dbg_print("Tick");
-	if (_fsv.automaton_state ~= "inactive" and _fsv.automaton_state ~= "scrape_item_list") then
+	if (_fsa.automaton_state ~= "inactive" and _fsa.automaton_state ~= "scrape_item_list") then
 		_fsa.ah_automaton();
 	end
 end
@@ -78,13 +78,14 @@ _fsf.test2 = test2;
 -- automaton, because I don't know how to handle out of file dependencies
 _fsa = {};
 
-local item_name = "elemental earth"; -- blank queries for all items
+_fsa.automaton_state = "inactive";
+_fsa.search_query = "elemental earth";
 local class_idx = 9; -- 9 is reagents ... experiment a bit
 local query_page = 0;
 
 local function ah_dbg_print(text)
 	if _fsv.debug then
-		_fsf.pprint("<ah: " .. _fsv.automaton_state .. ">" .. text);
+		_fsf.pprint("<ah: " .. _fsa.automaton_state .. ">" .. text);
 	end
 end
 
@@ -111,7 +112,7 @@ end
 _fsa.auction_query = auction_query;
 
 local function scrape_auction_item_list()
-	if _fsv.automaton_state ~= "scrape_item_list" then
+	if _fsa.automaton_state ~= "scrape_item_list" then
 		return
 	end
 	ah_dbg_print("Scraping auction item list.");
@@ -120,47 +121,61 @@ local function scrape_auction_item_list()
 		-- ah_dbg_print("Scraping item [" .. ah_index .. "]");
 		
 		local name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, bidAmount, highestBidder, owner, sold = GetAuctionItemInfo("list", ah_index);
+		
+		-- generate string from result
+		-- interesting ones: count, buyoutPrice
+		local arr_item_info = {name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, bidAmount, highestBidder, owner, sold};
+		texture = nil; -- really long string, zero data value
+		local str_item_info = _fsv.start_time .. ",";
+		for i, el in pairs(arr_item_info) do
+			if el ~= nil then
+				str_item_info = str_item_info .. el;
+			end
+			str_item_info = str_item_info .. ",";
+		end
+		
+		-- name == nil means we reached the end of the auction house list
 		if (name == nil) then
 			ah_dbg_print("Item list ended. Ending query.");
-			_fsv.automaton_state = "end";
+			_fsa.automaton_state = "end";
 			return;
 		else
-			local res_string = name .. "," .. texture .. "," .. count .. "," .. quality .. "," .. canUse .. "," .. level .. "," .. minBid .. "," .. minIncrement .. "," .. buyoutPrice .. "," .. bidAmount .. "," .. highestBidder .. "," .. owner .. "," .. sold;
-			-- local res_string = _fsv.start_time .. "," .. name .. "," .. buyoutPrice;
-			table.insert(farseer_dump, res_string);
+			table.insert(farseer_dump, str_item_info);
 		end
 	end
-	_fsv.automaton_state = "query"
+	_fsa.automaton_state = "query"
 end
 _fsa.scrape_auction_item_list = scrape_auction_item_list;
 
 local function ah_automaton()
 	-- todo: failsafe for when we're away from the vender / window closes
-	if _fsv.automaton_state == "inactive" then
+	if _fsa.automaton_state == "inactive" then
 		return
-	elseif _fsv.automaton_state == "start" then
+	elseif _fsa.automaton_state == "start" then
 		ah_dbg_print("Starting ah_automaton.");
+		ah_dbg_print("search_query: " .. _fsa.search_query);
 		_fsf.init_farseer_dump();
 		_fsf.set_start_time();
 		ah_page = 0;
-		_fsv.automaton_state = "query";
-	elseif _fsv.automaton_state == "query" then
+		_fsa.automaton_state = "query";
+	elseif _fsa.automaton_state == "query" then
 		if CanSendAuctionQuery("list") then
 			-- auction item list update event will trigger the scraper
 			-- scraper needs to set automaton back to query mode (or end mode if end of list)
-			_fsv.automaton_state = "scrape_item_list"; -- dummy state, a function is actually catching this
+			_fsa.automaton_state = "scrape_item_list"; -- dummy state, a function is actually catching this
 			ah_dbg_print("Next page available.");
-			auction_query(item_name, class_idx, query_page);
+			auction_query(_fsa.search_query, class_idx, query_page);
 			query_page = query_page + 1;
 		end
-	elseif _fsv.automaton_state == "end" then
+	elseif _fsa.automaton_state == "end" then
 		ah_dbg_print("Stopping ah_automaton.");
-		_fsv.automaton_state = "inactive";
-		_fsv.ah_automaton_on = false;
+		_fsa.automaton_state = "inactive";
 		query_page = 0;
 		
 		_fsf.set_end_time();
-		table.insert(farseer_dump, _fsv.end_time);
+		local metadata = "METADATA," .. _fsv.start_time .. "," .. _fsv.end_time .. "," .. _fsa.search_query;
+		_fsf.pprint(metadata);
+		table.insert(farseer_dump, metadata);
 	end
 end
 _fsa.ah_automaton = ah_automaton;

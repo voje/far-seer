@@ -6,9 +6,6 @@ _fsv.chat_counter = 0;
 _fsv.tick_module = 2;
 _fsv.start_time = nil;
 _fsv.end_time = nil;
--- make ah query a state automata.
--- tick() funcion progresses the state.
-_fsv.automaton_state = "inactive";
 
 function fs_onload()
     this:RegisterEvent("CHAT_PLAYER_ENTERING_WORLD");

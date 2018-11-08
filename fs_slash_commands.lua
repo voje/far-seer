@@ -6,16 +6,19 @@ function SlashCmdList.fs_main(cmd)
 		_fsf.test1();
 	elseif cmd == "test2" then
 		_fsf.test2();
-	elseif cmd == "ah_on" then
-		_fsv.automaton_state = "start";
-	elseif cmd == "ah_off" then
-		_fsv.automaton_state = "end";
+	elseif cmd == "scan" then
+		_fsa.automaton_state = "start";
+	elseif cmd == "stop" then
+		_fsa.automaton_state = "end";
 	else
 		_fsf.pprint(cmd);
 	end
 end
 
-SLASH_fs_ah1 = "/fsah";
+SLASH_fs_ah1 = "/fsset";
 function SlashCmdList.fs_ah(cmd)
-	_fsf.auction_query("", nil, cmd);
+	if cmd == nil then
+		cmd = "";
+	end
+	_fsa.search_query = cmd;
 end
