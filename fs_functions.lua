@@ -104,7 +104,8 @@ local function auction_query(itemName, classIndex, page)
 	]]
 	-- you need to have AH window open.
 	-- local classIndex = 3; -- bags, containers
-	local classIndex = 9; -- reagents
+	-- local classIndex = 9; -- reagents
+	local classIndex = 0;
 	dbg_print("[ * ] auction_query( classIndex=" .. classIndex .. ", page=" .. page .. " )");
 	QueryAuctionItems(itemName, nil, nil, nil, classIndex, nil, page);
 	return true;
@@ -121,13 +122,14 @@ local function scrape_auction_item_list()
 		-- ah_dbg_print("Scraping item [" .. ah_index .. "]");
 		
 		local name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, bidAmount, highestBidder, owner, sold = GetAuctionItemInfo("list", ah_index);
-		
+		texture = nil; -- really long string, zero data value
+
 		-- generate string from result
 		-- interesting ones: count, buyoutPrice
 		local arr_item_info = {name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, bidAmount, highestBidder, owner, sold};
-		texture = nil; -- really long string, zero data value
 		local str_item_info = _fsv.start_time .. ",";
-		for i, el in pairs(arr_item_info) do
+		for i = 1, 13 do
+			local el = arr_item_info[i];
 			if el ~= nil then
 				str_item_info = str_item_info .. el;
 			end
