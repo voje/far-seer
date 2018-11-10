@@ -79,7 +79,7 @@ _fsf.test2 = test2;
 _fsa = {};
 
 _fsa.automaton_state = "inactive";
-_fsa.search_query = "elemental earth";
+_fsa.search_query = "elemental";
 local class_idx = 9; -- 9 is reagents ... experiment a bit
 local query_page = 0;
 
